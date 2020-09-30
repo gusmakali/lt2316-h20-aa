@@ -21,9 +21,9 @@ Both of these main functions (`create_data_df` and `create_ner_df`) use their ow
 Design desicions:
 
 - `vocab` and `id2word` - both essentially refer to the same list of unique tokens from data. 
-- token ids - all unique tokens collected from data and assigned to an ID by their index in the vocabulary.`id2word`(that assings token_ids) has fisrt values as None so 0 will never be assigned to a token that exists in data.
+- token ids - all unique tokens collected from data and assigned to an ID by their index in the vocabulary.`id2word`(that assings token_ids) has first value as None so 0 will never be assigned to a token that exists in data.
 - ner ids - 4 ner types collected in the array `[None, 'group', 'drug_n', 'drug', 'brand']` where None ensures that 0 is not assigned as an ID to any of NERs. Therefore resulting IDs - None=0, group=1, drug_n=2, drug=3, brand=4.
-- the offsets that correspond to non sequence ners - e.g. 69-73;83-89 - are treated as two NERs for now and thus result in 2 entries in the `ner_df`
+- the offsets that correspond to non sequence ners - e.g. 69-73;83-89 - are treated as two NERs for now and thus result in 2 entries in the `ner_df`. 
 - the split of train data is made with consideration to not split it into two different dataframes - e.g. if `sentence0123` has 55 tokens, all of them will be assigned either to `TRAIN` or `VAL` splits, not for example 20 to `VAL` and 35 to `TRAIN`. I assumed that for training or validation it would be good to have full sentences with corresponding encoding. For this reason, `TEST` and `VAL` sets are not exacly the same length - `VAL` is a bit smaller - which shouldn't be a problem. The ratio might be changed during modeling, if it will be needed. 
 - the 'Test for DDI Extraction' folder is used to collect only entities data (not pair_id data) for `test_df`. 
 - the `get_y` function uses the `split_ner` function to split `ner_df` into three data frames (one for `TRAIN`, `TEST`, and `VAL`). Then `extract_tensor` combines each of those splits with similar `data_df` splits, extracts an array per sentence in each split and pads it to be of max sample length. It supports cutting to max sample length if that is max sample length is changed to a lower value.
