@@ -149,8 +149,9 @@ class DataLoader(DataLoaderBase):
         result_df = pd.concat([test_df, train_and_val_df])
 
         print("Split data in train, test, val is done.")
+        vocab = id2word[1:] 
 
-        return result_df, id2word
+        return result_df, id2word, vocab
 
     @classmethod
     def split_offset(self, offset):
@@ -212,21 +213,20 @@ class DataLoader(DataLoaderBase):
         PICKLE_DATA_FILE = 'data.pickle'
 
         if REPICKLE == True or not os.path.isfile(PICKLE_DATA_FILE):
-            (data_df, id2word) = self.create_data_df(data_dir)
+            (data_df, id2word, vocab) = self.create_data_df(data_dir)
             (ner_df, id2ner) = self.create_ner_df(data_dir)
             df_files = open(PICKLE_DATA_FILE, 'wb')
-            pickle.dump((data_df, id2word, ner_df, id2ner), df_files)
+            pickle.dump((data_df, id2word, vocab, ner_df, id2ner), df_files)
             df_files.close()
         else:
             df_files = open(PICKLE_DATA_FILE, 'rb')
-            data_df, id2word, ner_df, id2ner = pickle.load(df_files)
+            data_df, id2word, vocab, ner_df, id2ner = pickle.load(df_files)
 
         self.data_df = data_df
         self.ner_df = ner_df
         self.id2word = id2word
-        self.word2id = { word : i for i, word in enumerate(id2word) }
+        self.vocab = vocab
         self.id2ner = id2ner
-        self.ner2id = { ner : i for i, ner in enumerate(id2ner) if ner is not None }
 
     def discover_max_sample_len(self):
         sents = self.data_df[['sentence_id']]

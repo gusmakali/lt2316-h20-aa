@@ -4,14 +4,14 @@ Name: Liliia Makashova
 
 ## Notes on Part 1.
 
-PLEASE NOTE: the current implementation assumes that you will put data folder (`DDICorpus`) inside aa folder on the same level with data_loading.py and feature_extraction.py files. The `run.ipynb` should stay outside the `aa` folder. If you wish to arrange the files in another way, please change the path given as the `data_dir` paameter in `run.ipynb` respectively.
+PLEASE NOTE: the current implementation assumes that you will put data folder (`DDICorpus`) inside `aa` folder on the same level with data_loading.py and feature_extraction.py files. The `run.ipynb` should stay outside the `aa` folder. If you wish to arrange the files in another way, please change the path given as the `data_dir` paameter in `run.ipynb` respectively.
 
 ### parse_data function
 
 This function uses two main functions to create the required dataframe - `create_data_df` and `create_ner_df` respectively.
 
 ---
-**NOTE**
+***NOTE***
 
 When `create_data_df` from `DataLoader` class runs for the first time, it will produce print statements that notify you about the progress in data parsing. Creating the `data_df` DataFrame takes longer than `ner_df`, as `data_df` is much bigger. Pickled `data_df` and `ner_df` will be used for consecutive runs to shorten execution time. No print statements are produced then.
 ---
@@ -20,7 +20,8 @@ Both of these main functions (`create_data_df` and `create_ner_df`) use their ow
 
 Design desicions:
 
-- token ids - all unique tokens collected in the vocab and assigned to an ID by their index in the vocabulary `id2word`.
+- `vocab` and `id2word` - both essentially refer to the same list of unique tokens from data. 
+- token ids - all unique tokens collected from data and assigned to an ID by their index in the vocabulary.`id2word`(that assings token_ids) has fisrt values as None so 0 will never be assigned to a token that exists in data.
 - ner ids - 4 ner types collected in the array `[None, 'group', 'drug_n', 'drug', 'brand']` where None ensures that 0 is not assigned as an ID to any of NERs. Therefore resulting IDs - None=0, group=1, drug_n=2, drug=3, brand=4.
 - the offsets that correspond to non sequence ners - e.g. 69-73;83-89 - are treated as two NERs for now and thus result in 2 entries in the `ner_df`
 - the split of train data is made with consideration to not split it into two different dataframes - e.g. if `sentence0123` has 55 tokens, all of them will be assigned either to `TRAIN` or `VAL` splits, not for example 20 to `VAL` and 35 to `TRAIN`. I assumed that for training or validation it would be good to have full sentences with corresponding encoding. For this reason, `TEST` and `VAL` sets are not exacly the same length - `VAL` is a bit smaller - which shouldn't be a problem. The ratio might be changed during modeling, if it will be needed. 
